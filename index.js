@@ -16,10 +16,28 @@ const openai = new OpenAIApi(configuration);
 // Test reqres
 app.post("/test-post", async (req, res) => {
     try {
-        return res.status(200).json({
-            message: "All sorted.",
+        const response = await openai.createCompletion({
+            model: "gpt-3.5-turbo",
+            prompt: `The answer to life, the universe and everything is `,
+            max_tokens: 64,
+            temperature: .98,
+            top_p: 1.0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
+            stop: ["\n"]
+    });
+    return res.status(200).json({
+        success: true,
+        data: response.data.choices[0].text
+    })
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            error: error.response
+            ? error.response.data
+            : "Oh dear."
         })
-    } catch (error) {}
+    }
 });
 
 // Get that port sorted
